@@ -7,14 +7,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Progress } from "@/components/ui/progress"
 import { Camera, CameraOff, Play, Pause, RotateCcw, CheckCircle, AlertTriangle, Target, Timer, Zap } from "lucide-react"
-
-interface PoseData {
-  exercise: string
-  reps: number
-  accuracy: number
-  feedback: string
-  status: "correct" | "incorrect" | "adjusting"
-}
+import { useMediaPipePose } from "@/hooks/useMediaPipePose"
+import { useRepCounter } from "@/components/RepCounter"
 
 export default function TrainerPage() {
   const videoRef = useRef<HTMLVideoElement>(null)
@@ -22,15 +16,19 @@ export default function TrainerPage() {
   const [isRecording, setIsRecording] = useState(false)
   const [currentExercise, setCurrentExercise] = useState("push-ups")
   const [workoutStarted, setWorkoutStarted] = useState(false)
-  const [poseData, setPoseData] = useState<PoseData>({
-    exercise: "push-ups",
-    reps: 0,
-    accuracy: 85,
-    feedback: "Keep your back straight and lower your chest closer to the ground",
-    status: "adjusting",
-  })
   const [workoutTimer, setWorkoutTimer] = useState(0)
   const [targetReps, setTargetReps] = useState(10)
+
+  // MediaPipe pose detection
+  const { poseResults, exerciseAnalysis, setExerciseAnalysis } = useMediaPipePose(
+    videoRef,
+    canvasRef,
+    currentExercise,
+    isRecording
+  )
+
+  // Rep counter
+  const { count: reps, countRep, resetCount } = useRepCounter(currentExercise)
 
   const exercises = [
     { id: "push-ups", name: "Push-ups", difficulty: "Beginner", target: "Chest, Arms" },
@@ -39,6 +37,14 @@ export default function TrainerPage() {
     { id: "lunges", name: "Lunges", difficulty: "Intermediate", target: "Legs, Glutes" },
     { id: "burpees", name: "Burpees", difficulty: "Advanced", target: "Full Body" },
   ]
+
+  // Count reps when pose results change
+  useEffect(() => {
+    if (poseResults && workoutStarted) {
+      const newRepCount = countRep(poseResults.landmarks)
+      setExerciseAnalysis(prev => ({ ...prev, reps: newRepCount }))
+    }
+  }, [poseResults, countRep, workoutStarted, setExerciseAnalysis])
 
   useEffect(() => {
     let interval: NodeJS.Timeout
@@ -76,7 +82,7 @@ export default function TrainerPage() {
   const startWorkout = () => {
     setWorkoutStarted(true)
     setWorkoutTimer(0)
-    setPoseData((prev) => ({ ...prev, reps: 0 }))
+    resetCount()
   }
 
   const pauseWorkout = () => {
@@ -86,7 +92,7 @@ export default function TrainerPage() {
   const resetWorkout = () => {
     setWorkoutStarted(false)
     setWorkoutTimer(0)
-    setPoseData((prev) => ({ ...prev, reps: 0 }))
+    resetCount()
   }
 
   const formatTime = (seconds: number) => {
@@ -122,7 +128,7 @@ export default function TrainerPage() {
       <div className="max-w-7xl mx-auto">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="mb-8">
           <h1 className="text-4xl font-bold text-white mb-2">AI Workout Trainer</h1>
-          <p className="text-slate-300">Real-time form analysis and personalized feedback</p>
+          <p className="text-slate-300">Real-time form analysis and personalized feedback powered by MediaPipe</p>
         </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -131,7 +137,7 @@ export default function TrainerPage() {
             <Card className="bg-black/20 backdrop-blur-xl border-white/10">
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle className="text-white">Live Camera Feed</CardTitle>
+                  <CardTitle className="text-white">Live Camera Feed with Pose Detection</CardTitle>
                   <div className="flex gap-2">
                     <Button
                       onClick={isRecording ? stopCamera : startCamera}
@@ -147,17 +153,21 @@ export default function TrainerPage() {
               <CardContent>
                 <div className="relative aspect-video bg-black rounded-lg overflow-hidden">
                   <video ref={videoRef} autoPlay playsInline muted className="w-full h-full object-cover" />
-                  <canvas ref={canvasRef} className="absolute inset-0 w-full h-full" />
+                  <canvas ref={canvasRef} className="absolute inset-0 w-full h-full pointer-events-none" />
 
-                  {/* Pose Detection Overlay */}
+                  {/* Pose Detection Status Overlay */}
                   {isRecording && (
                     <div className="absolute inset-0 pointer-events-none">
-                      {/* Skeleton overlay would be drawn here */}
                       <div className="absolute top-4 left-4 bg-black/50 backdrop-blur-sm rounded-lg p-3">
-                        <div className={`flex items-center gap-2 ${getStatusColor(poseData.status)}`}>
-                          {getStatusIcon(poseData.status)}
-                          <span className="font-medium capitalize">{poseData.status}</span>
+                        <div className={`flex items-center gap-2 ${getStatusColor(exerciseAnalysis.status)}`}>
+                          {getStatusIcon(exerciseAnalysis.status)}
+                          <span className="font-medium capitalize">{exerciseAnalysis.status}</span>
                         </div>
+                        {poseResults && (
+                          <div className="text-xs text-white/70 mt-1">
+                            Pose detected: {poseResults.landmarks.length} landmarks
+                          </div>
+                        )}
                       </div>
                     </div>
                   )}
@@ -215,18 +225,18 @@ export default function TrainerPage() {
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-300">Progress</span>
                     <span className="text-white">
-                      {poseData.reps}/{targetReps} reps
+                      {reps}/{targetReps} reps
                     </span>
                   </div>
-                  <Progress value={(poseData.reps / targetReps) * 100} className="h-2" />
+                  <Progress value={(reps / targetReps) * 100} className="h-2" />
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
                     <span className="text-slate-300">Form Accuracy</span>
-                    <span className="text-white">{poseData.accuracy}%</span>
+                    <span className="text-white">{exerciseAnalysis.accuracy}%</span>
                   </div>
-                  <Progress value={poseData.accuracy} className="h-2" />
+                  <Progress value={exerciseAnalysis.accuracy} className="h-2" />
                 </div>
               </CardContent>
             </Card>
@@ -236,20 +246,20 @@ export default function TrainerPage() {
               <CardHeader>
                 <CardTitle className="text-white flex items-center gap-2">
                   <Zap className="w-5 h-5" />
-                  Live Feedback
+                  MediaPipe AI Feedback
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="space-y-3">
                   <div
-                    className={`flex items-start gap-3 p-3 rounded-lg bg-black/20 ${getStatusColor(poseData.status)}`}
+                    className={`flex items-start gap-3 p-3 rounded-lg bg-black/20 ${getStatusColor(exerciseAnalysis.status)}`}
                   >
-                    {getStatusIcon(poseData.status)}
-                    <p className="text-sm text-white">{poseData.feedback}</p>
+                    {getStatusIcon(exerciseAnalysis.status)}
+                    <p className="text-sm text-white">{exerciseAnalysis.feedback}</p>
                   </div>
 
                   <div className="text-xs text-slate-400">
-                    AI is analyzing your form in real-time and providing personalized feedback.
+                    MediaPipe is analyzing your pose in real-time with 33 body landmarks for precise form feedback.
                   </div>
                 </div>
               </CardContent>
@@ -265,7 +275,10 @@ export default function TrainerPage() {
                   {exercises.map((exercise) => (
                     <Button
                       key={exercise.id}
-                      onClick={() => setCurrentExercise(exercise.id)}
+                      onClick={() => {
+                        setCurrentExercise(exercise.id)
+                        resetCount()
+                      }}
                       variant={currentExercise === exercise.id ? "default" : "ghost"}
                       className="w-full justify-start"
                       disabled={workoutStarted}

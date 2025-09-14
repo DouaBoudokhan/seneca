@@ -15,9 +15,11 @@ pip install uv
 Next, navigate to your project directory and install the dependencies:
 
 (Optional) Lock the dependencies and install them by using the CLI command:
+
 ```bash
 crewai install
 ```
+ 
 ### Customizing
 
 **Add your `OPENAI_API_KEY` into the `.env` file**
@@ -32,7 +34,7 @@ crewai install
 To kickstart your crew of AI agents and begin task execution, run this from the root folder of your project:
 
 ```bash
-$ crewai run
+crewai run
 ```
 
 This command initializes the hack-seneca Crew, assembling the agents and assigning them tasks as defined in your configuration.
@@ -43,9 +45,14 @@ This example, unmodified, will run the create a `report.md` file with the output
 
 The hack-seneca Crew is composed of multiple AI agents, each with unique roles, goals, and tools. These agents collaborate on a series of tasks, defined in `config/tasks.yaml`, leveraging their collective skills to achieve complex objectives. The `config/agents.yaml` file outlines the capabilities and configurations of each agent in your crew.
 
+For detailed, sectioned documentation of the programmatic tasks defined in `src/hack_seneca/crew.py` (Manager, Fitness, Nutritionist), see:
+
+- docs/crew-tasks.md
+
 ## Support
 
 For support, questions, or feedback regarding the HackSeneca Crew or crewAI.
+
 - Visit our [documentation](https://docs.crewai.com)
 - Reach out to us through our [GitHub repository](https://github.com/joaomdmoura/crewai)
 - [Join our Discord](https://discord.com/invite/X4JWnZnxPb)
