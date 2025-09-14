@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/theme-toggle"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { VoiceRecorder } from "@/components/voice-recorder"
 import { Send, Volume2, Sparkles, User, Loader2 } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -31,6 +32,7 @@ const quickSuggestions = [
 export default function CoachPage() {
   const [messages, setMessages] = useState<Message[]>([])
   const [inputMessage, setInputMessage] = useState("")
+  const [isListening, setIsListening] = useState(false)
   const [isTyping, setIsTyping] = useState(false)
   const [isSpeaking, setIsSpeaking] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
@@ -425,6 +427,13 @@ export default function CoachPage() {
                   placeholder="Ask me anything about your fitness journey..."
                   className="flex-1 bg-white/10 border-white/20 text-white placeholder:text-white/50 focus:border-blue-400"
                   disabled={isTyping}
+                />
+                {/* Voice Recorder Button */}
+                <VoiceRecorder
+                  onTranscript={(transcript) => setInputMessage(transcript)}
+                  isListening={isListening}
+                  setIsListening={setIsListening}
+                  className="ml-1"
                 />
                 <Button
                   onClick={() => sendMessage(inputMessage)}
