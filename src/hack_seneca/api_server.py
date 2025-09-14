@@ -54,6 +54,11 @@ class ChatRequest(BaseModel):
 class ChatResponse(BaseModel):
     response: str
     timestamp: datetime
+    message_type: Optional[str] = "text"  # "text", "workout", "nutrition", "motivation", "progress", "tip", "achievement"
+    emoji: Optional[str] = None
+    priority: Optional[str] = "normal"  # "low", "normal", "high"
+    data: Optional[Dict[str, Any]] = None  # Additional structured data for special message types
+    suggestions: Optional[List[str]] = None  # Quick reply suggestions
 
 class FoodAnalysisRequest(BaseModel):
     image_data: str  # Base64 encoded image data
@@ -321,6 +326,311 @@ Be conservative and mention if portion sizes are hard to estimate. Include macro
             "error": f"Food analysis failed: {str(e)}"
         }
 
+    return summary
+
+def analyze_response_content(response_text: str, user_message: str) -> tuple:
+    """Analyze response content to determine message type and extract relevant data"""
+    
+    response_lower = response_text.lower()
+    user_lower = user_message.lower()
+    
+    # Determine message type based on content keywords
+    if any(keyword in response_lower for keyword in ["workout", "exercise", "training", "routine", "fitness plan", "reps", "sets"]):
+        message_type = "workout"
+        emoji = "💪"
+        priority = "normal"
+        
+        # Extract structured workout data
+        data = extract_workout_data(response_text)
+        
+        suggestions = [
+            "🔄 Modify this workout",
+            "📝 Save to my plans", 
+            "💬 Ask questions about form",
+            "⏱️ Set workout reminders"
+        ]
+        
+    elif any(keyword in response_lower for keyword in ["nutrition", "meal", "food", "diet", "calories", "protein", "eat"]):
+        message_type = "nutrition"
+        emoji = "🥗"
+        priority = "normal"
+        
+        # Extract nutrition data
+        data = extract_nutrition_data(response_text)
+        
+        suggestions = [
+            "🛒 Create shopping list",
+            "📱 Log this meal",
+            "🔄 Get meal variations", 
+            "📊 Check nutrition facts"
+        ]
+        
+    elif any(keyword in response_lower for keyword in ["progress", "goal", "track", "achievement", "milestone", "improvement"]):
+        message_type = "progress"
+        emoji = "📊"
+        priority = "normal"
+        
+        # Extract progress data if mentioned
+        data = {}
+        import re
+        
+        # Look for numbers that might be progress metrics
+        numbers = re.findall(r'\d+', response_text)
+        if len(numbers) >= 2:
+            data = {
+                "workouts": numbers[0] if len(numbers) > 0 else "0",
+                "streak": numbers[1] if len(numbers) > 1 else "0", 
+                "goals": numbers[2] if len(numbers) > 2 else "0"
+            }
+        
+        suggestions = [
+            "📈 View detailed progress",
+            "🎯 Update my goals",
+            "🏆 See achievements",
+            "📅 Plan next week"
+        ]
+        
+    elif any(keyword in response_lower for keyword in ["motivation", "encourage", "inspire", "great job", "keep it up", "you can do", "believe"]):
+        message_type = "motivation"
+        emoji = "🔥"
+        priority = "high"
+        data = {}
+        suggestions = [
+            "💪 I need more motivation!",
+            "🎵 Share workout music",
+            "📱 Set daily reminders",
+            "🤝 Find workout buddy"
+        ]
+        
+    elif any(keyword in response_lower for keyword in ["tip", "advice", "suggestion", "recommend", "try", "consider", "help"]):
+        message_type = "tip"
+        emoji = "💡"
+        priority = "normal"
+        data = {}
+        suggestions = [
+            "📚 More tips like this",
+            "💾 Save this tip",
+            "❓ Ask follow-up questions",
+            "🔄 Get related advice"
+        ]
+        
+    elif any(keyword in response_lower for keyword in ["congratulations", "achievement", "accomplished", "proud", "success", "milestone"]):
+        message_type = "achievement"
+        emoji = "🏆"
+        priority = "high"
+        data = {}
+        suggestions = [
+            "🎉 Share my success!",
+            "🎯 Set new goals",
+            "📸 Take progress photo",
+            "💪 What's next?"
+        ]
+        
+    else:
+        message_type = "text"
+        emoji = "💬"
+        priority = "normal"
+        data = {}
+        suggestions = [
+            "💪 Plan a workout",
+            "🥗 Suggest a meal",
+            "📊 Check progress",
+            "💡 Get fitness tips"
+        ]
+    
+    return message_type, emoji, priority, data, suggestions
+
+def extract_workout_data(response_text: str) -> dict:
+    """Extract structured workout data from response text"""
+    import re
+    
+    data = {}
+    
+    # Extract duration
+    duration_match = re.search(r'(\d+)[-\s]*(\d+)?\s*(?:minute|min)', response_text.lower())
+    if duration_match:
+        if duration_match.group(2):
+            data["duration"] = f"{duration_match.group(1)}-{duration_match.group(2)} min"
+        else:
+            data["duration"] = f"{duration_match.group(1)} min"
+    
+    # Extract difficulty level
+    for level in ["beginner", "intermediate", "advanced", "easy", "moderate", "hard"]:
+        if level in response_text.lower():
+            data["difficulty"] = level.capitalize()
+            break
+    
+    # Extract focus areas
+    focus_keywords = {
+        "upper body": ["upper body", "arms", "chest", "shoulders", "back"],
+        "lower body": ["lower body", "legs", "glutes", "thighs", "calves"],
+        "core": ["core", "abs", "abdomen", "stomach"],
+        "cardio": ["cardio", "cardiovascular", "running", "cycling"],
+        "full body": ["full body", "whole body", "complete"]
+    }
+    
+    for focus, keywords in focus_keywords.items():
+        if any(keyword in response_text.lower() for keyword in keywords):
+            data["focus"] = focus
+            break
+    
+    # Count exercises mentioned
+    exercise_count = len(re.findall(r'\d+\.\s*[A-Za-z]', response_text))
+    if exercise_count > 0:
+        data["exercise_count"] = exercise_count
+    
+    return data
+
+def extract_nutrition_data(response_text: str) -> dict:
+    """Extract structured nutrition data from response text"""
+    import re
+    
+    data = {}
+    
+    # Extract calories
+    calories_match = re.search(r'(\d+)\s*(?:calorie|cal)', response_text.lower())
+    if calories_match:
+        data["calories"] = int(calories_match.group(1))
+        
+    # Extract protein
+    protein_match = re.search(r'(\d+)(?:\s*(?:gram|g))?\s*(?:of\s+)?protein', response_text.lower())
+    if protein_match:
+        data["protein"] = f"{protein_match.group(1)}g"
+    
+    # Extract meal type
+    meal_types = ["breakfast", "lunch", "dinner", "snack", "post-workout"]
+    for meal_type in meal_types:
+        if meal_type in response_text.lower():
+            data["meal_type"] = meal_type.capitalize()
+            break
+    
+    # Count ingredients or food items
+    ingredient_count = len(re.findall(r'[-•]\s*[A-Za-z]', response_text))
+    if ingredient_count > 0:
+        data["ingredient_count"] = ingredient_count
+    
+    return data
+
+def add_personality_to_response(response_text: str, message_type: str) -> str:
+    """Add personality elements and improve formatting of the response"""
+    
+    # First, improve the formatting of the response
+    formatted_response = improve_response_formatting(response_text, message_type)
+    
+    # Then add personality elements
+    fitness_expressions = {
+        "workout": ["Let's get those gains! 💪", "Time to crush it! 🔥", "Your body will thank you! ✨"],
+        "nutrition": ["Fuel your body right! 🌟", "Healthy choices = happy body! 😊", "You are what you eat! 🥗"],
+        "motivation": ["You've got this! 🔥", "Every step counts! 👟", "Progress over perfection! ⭐"],
+        "progress": ["Look at you go! 📈", "Amazing progress! 🎯", "Keep up the momentum! 🚀"],
+        "tip": ["Pro tip incoming! 💡", "Knowledge is power! 🧠", "Here's the secret! ✨"],
+        "achievement": ["You're a rockstar! 🌟", "Incredible work! 🏆", "So proud of you! 🎉"]
+    }
+    
+    # Add encouraging phrases based on message type
+    if message_type in fitness_expressions:
+        import random
+        expression = random.choice(fitness_expressions[message_type])
+        
+        # Add the expression at the end if it's not already enthusiastic
+        if not any(punct in formatted_response for punct in ["!", "💪", "🔥", "✨", "🌟"]):
+            formatted_response += f" {expression}"
+    
+    # Add motivational sign-offs occasionally (30% chance)
+    motivational_signoffs = [
+        "\n\nRemember: You're stronger than you think! 💪",
+        "\n\nKeep up the amazing work! 🌟", 
+        "\n\nI believe in you! 🔥",
+        "\n\nYou've got this! ✨",
+        "\n\nStay consistent, stay strong! 💪",
+        "\n\nEvery effort counts! 🎯"
+    ]
+    
+    import random
+    if random.random() < 0.3:
+        signoff = random.choice(motivational_signoffs)
+        formatted_response += signoff
+    
+    return formatted_response
+
+def improve_response_formatting(response_text: str, message_type: str) -> str:
+    """Improve the formatting of response text for better readability"""
+    
+    # Remove excessive asterisks and clean up formatting
+    cleaned_text = response_text
+    
+    # Handle workout plans specifically
+    if message_type == "workout" or "workout plan" in response_text.lower():
+        cleaned_text = format_workout_plan(response_text)
+    elif message_type == "nutrition" or any(word in response_text.lower() for word in ["meal", "nutrition", "diet"]):
+        cleaned_text = format_nutrition_advice(response_text)
+    else:
+        # General text formatting
+        cleaned_text = format_general_text(response_text)
+    
+    return cleaned_text
+
+def format_workout_plan(text: str) -> str:
+    """Format workout plan text for better readability"""
+    import re
+    
+    # Split into main sections
+    parts = text.split("**")
+    formatted_parts = []
+    
+    for i, part in enumerate(parts):
+        part = part.strip()
+        if not part:
+            continue
+            
+        # Check if this is a day header
+        if re.match(r'(Monday|Tuesday|Wednesday|Thursday|Friday|Saturday|Sunday)', part, re.IGNORECASE):
+            formatted_parts.append(f"\n**{part}**")
+        # Check if this is an exercise description
+        elif re.search(r'\d+\.\s*[A-Za-z]', part):
+            # Format exercises with better line breaks
+            exercises = re.split(r'(\d+\.\s*)', part)
+            formatted_exercise = ""
+            for j, exercise in enumerate(exercises):
+                if exercise.strip():
+                    if re.match(r'\d+\.\s*', exercise):
+                        formatted_exercise += f"\n{exercise}"
+                    else:
+                        formatted_exercise += exercise
+            formatted_parts.append(formatted_exercise)
+        else:
+            formatted_parts.append(part)
+    
+    return " ".join(formatted_parts)
+
+def format_nutrition_advice(text: str) -> str:
+    """Format nutrition advice for better readability"""
+    import re
+    
+    # Add line breaks before meal types
+    meal_pattern = r'\*\*(Breakfast|Lunch|Dinner|Snack)[^*]*\*\*'
+    formatted_text = re.sub(meal_pattern, r'\n\g<0>', text)
+    
+    # Add line breaks for bullet points
+    formatted_text = re.sub(r'[-•]\s*', r'\n• ', formatted_text)
+    
+    return formatted_text.strip()
+
+def format_general_text(text: str) -> str:
+    """Format general text for better readability"""
+    import re
+    
+    # Add line breaks after sentences that end with periods followed by capital letters
+    formatted_text = re.sub(r'\.(\s+)([A-Z])', r'.\n\n\2', text)
+    
+    # Add line breaks before numbered lists
+    formatted_text = re.sub(r'(\d+\.\s*[A-Za-z])', r'\n\1', formatted_text)
+    
+    # Clean up multiple line breaks
+    formatted_text = re.sub(r'\n\s*\n\s*\n', r'\n\n', formatted_text)
+    
+    return formatted_text.strip()
+
 def create_nutrition_summary(nutrition_data: Dict[str, Any]) -> str:
     """Create a user-friendly summary of the nutrition analysis"""
     if "meal_totals" not in nutrition_data:
@@ -462,16 +772,70 @@ async def api_chat(request: ChatRequest):
             any(g in w for g in greetings) for w in text_clean.split()
         ):
             user_name = current_user_data.get("profile", {}).get("name", "there")
+            
+            # Get time-based greeting
+            current_hour = datetime.now().hour
+            if current_hour < 12:
+                time_greeting = "Good morning"
+                time_emoji = "🌅"
+            elif current_hour < 17:
+                time_greeting = "Good afternoon"  
+                time_emoji = "☀️"
+            else:
+                time_greeting = "Good evening"
+                time_emoji = "🌙"
+            
             if request.fatigue_status:
                 reply = (
-                    f"Hi {user_name}! I notice you sound tired right now. "
-                    f"What would you like help with today — perhaps a gentle workout plan, nutrition guidance, or something else to help you feel better?"
+                    f"{time_greeting} {user_name}! {time_emoji} I notice you sound tired right now. "
+                    f"No worries - we've all been there! 😊 What would you like help with today? "
+                    f"Perhaps a gentle workout plan, some energizing nutrition tips, or maybe just some motivation? "
+                    f"I'm here to support you on your fitness journey! 💪✨"
                 )
+                message_type = "motivation"
+                emoji = "💤"
+                priority = "high"
+                suggestions = [
+                    "🧘 Show me gentle exercises",
+                    "🥤 Suggest energy-boosting foods", 
+                    "😴 Help me plan better rest",
+                    "💪 Give me some motivation"
+                ]
             else:
+                motivational_greetings = [
+                    f"{time_greeting} {user_name}! {time_emoji} Ready to crush your fitness goals today?",
+                    f"Hey there, champion! {time_emoji} What fitness adventure shall we embark on today?",
+                    f"{time_greeting} {user_name}! {time_emoji} I'm excited to help you on your fitness journey!",
+                    f"Hello, fitness warrior! {time_emoji} Let's make today amazing together!"
+                ]
+                
+                import random
+                base_greeting = random.choice(motivational_greetings)
+                
                 reply = (
-                    f"Hi {user_name}! What would you like help with today — a workout plan, nutrition guidance (like meal ideas), or something else?"
+                    f"{base_greeting} 🏋️‍♂️ Whether you want to plan an epic workout, "
+                    f"discover delicious healthy meals, track your awesome progress, or just chat about fitness - "
+                    f"I'm here for you! What sounds good? ✨"
                 )
-            return ChatResponse(response=reply, timestamp=datetime.now())
+                message_type = "motivation"
+                emoji = "👋"
+                priority = "normal"
+                suggestions = [
+                    "💪 Create a workout plan",
+                    "🥗 Plan healthy meals",
+                    "📊 Check my progress", 
+                    "💡 Get fitness tips",
+                    "🎯 Set new goals"
+                ]
+            
+            return ChatResponse(
+                response=reply, 
+                timestamp=datetime.now(),
+                message_type=message_type,
+                emoji=emoji,
+                priority=priority,
+                suggestions=suggestions
+            )
         
         # Initialize the CrewAI fitness coach
         fitness_crew = FitnessCrew()
@@ -509,9 +873,20 @@ async def api_chat(request: ChatRequest):
         
         print(f"CrewAI response received: {response_text[:100]}...")
         
+        # Analyze response content to determine message type and add personality
+        message_type, emoji, priority, data, suggestions = analyze_response_content(response_text, request.message)
+        
+        # Add personality enhancements to the response
+        enhanced_response = add_personality_to_response(response_text, message_type)
+        
         return ChatResponse(
-            response=response_text,
-            timestamp=datetime.now()
+            response=enhanced_response,
+            timestamp=datetime.now(),
+            message_type=message_type,
+            emoji=emoji,
+            priority=priority,
+            data=data,
+            suggestions=suggestions
         )
     
     except Exception as e:
