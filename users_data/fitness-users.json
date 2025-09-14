@@ -1,0 +1,22 @@
+[
+  {
+    "user_id": "user_00001",
+    "age": 24,
+    "weight": 81.9,
+    "height": 155.9,
+    "bmi": 33.7,
+    "fitness_level": "intermediate",
+    "goals": "endurance",
+    "join_date": "2024-10-19"
+  },
+  {
+    "user_id": "user_00002",
+    "age": 53,
+    "weight": 100.2,
+    "height": 153.9,
+    "bmi": 42.3,
+    "fitness_level": "intermediate",
+    "goals": "flexibility",
+    "join_date": "2025-02-25"
+  }
+]

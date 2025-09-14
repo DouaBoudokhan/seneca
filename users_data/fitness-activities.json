@@ -1,0 +1,602 @@
+[
+  {
+    "user_id": "user_00001",
+    "date": "2025-09-11",
+    "steps": 14220,
+    "calories_burned": 1907,
+    "active_minutes": 98,
+    "distance_km": 11.38,
+    "heart_rate_avg": 150,
+    "workout_duration": 3
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-09-10",
+    "steps": 8434,
+    "calories_burned": 2044,
+    "active_minutes": 42,
+    "distance_km": 6.75,
+    "heart_rate_avg": 163,
+    "workout_duration": 76
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-09-09",
+    "steps": 11007,
+    "calories_burned": 2701,
+    "active_minutes": 118,
+    "distance_km": 8.81,
+    "heart_rate_avg": 121,
+    "workout_duration": 62
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-09-08",
+    "steps": 3675,
+    "calories_burned": 2492,
+    "active_minutes": 103,
+    "distance_km": 2.94,
+    "heart_rate_avg": 174,
+    "workout_duration": 83
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-09-07",
+    "steps": 11984,
+    "calories_burned": 2724,
+    "active_minutes": 76,
+    "distance_km": 9.59,
+    "heart_rate_avg": 70,
+    "workout_duration": 60
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-09-06",
+    "steps": 4539,
+    "calories_burned": 1571,
+    "active_minutes": 77,
+    "distance_km": 3.63,
+    "heart_rate_avg": 173,
+    "workout_duration": 9
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-09-05",
+    "steps": 10815,
+    "calories_burned": 2623,
+    "active_minutes": 55,
+    "distance_km": 8.65,
+    "heart_rate_avg": 132,
+    "workout_duration": 19
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-09-04",
+    "steps": 13826,
+    "calories_burned": 1773,
+    "active_minutes": 94,
+    "distance_km": 11.06,
+    "heart_rate_avg": 159,
+    "workout_duration": 12
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-09-03",
+    "steps": 7534,
+    "calories_burned": 2634,
+    "active_minutes": 120,
+    "distance_km": 6.03,
+    "heart_rate_avg": 151,
+    "workout_duration": 8
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-09-02",
+    "steps": 14306,
+    "calories_burned": 1726,
+    "active_minutes": 111,
+    "distance_km": 11.44,
+    "heart_rate_avg": 158,
+    "workout_duration": 53
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-09-01",
+    "steps": 7789,
+    "calories_burned": 2940,
+    "active_minutes": 81,
+    "distance_km": 6.23,
+    "heart_rate_avg": 81,
+    "workout_duration": 53
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-08-31",
+    "steps": 4279,
+    "calories_burned": 2955,
+    "active_minutes": 115,
+    "distance_km": 3.42,
+    "heart_rate_avg": 70,
+    "workout_duration": 90
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-08-30",
+    "steps": 12948,
+    "calories_burned": 1985,
+    "active_minutes": 62,
+    "distance_km": 10.36,
+    "heart_rate_avg": 130,
+    "workout_duration": 52
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-08-29",
+    "steps": 14921,
+    "calories_burned": 2941,
+    "active_minutes": 25,
+    "distance_km": 11.94,
+    "heart_rate_avg": 162,
+    "workout_duration": 38
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-08-28",
+    "steps": 4448,
+    "calories_burned": 1964,
+    "active_minutes": 55,
+    "distance_km": 3.56,
+    "heart_rate_avg": 96,
+    "workout_duration": 58
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-08-27",
+    "steps": 7472,
+    "calories_burned": 2322,
+    "active_minutes": 51,
+    "distance_km": 5.98,
+    "heart_rate_avg": 104,
+    "workout_duration": 10
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-08-26",
+    "steps": 10953,
+    "calories_burned": 2437,
+    "active_minutes": 23,
+    "distance_km": 8.76,
+    "heart_rate_avg": 154,
+    "workout_duration": 8
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-08-25",
+    "steps": 12778,
+    "calories_burned": 2347,
+    "active_minutes": 84,
+    "distance_km": 10.22,
+    "heart_rate_avg": 87,
+    "workout_duration": 60
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-08-24",
+    "steps": 7149,
+    "calories_burned": 2111,
+    "active_minutes": 101,
+    "distance_km": 5.72,
+    "heart_rate_avg": 99,
+    "workout_duration": 89
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-08-23",
+    "steps": 4001,
+    "calories_burned": 2908,
+    "active_minutes": 67,
+    "distance_km": 3.2,
+    "heart_rate_avg": 152,
+    "workout_duration": 62
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-08-22",
+    "steps": 9373,
+    "calories_burned": 2523,
+    "active_minutes": 79,
+    "distance_km": 7.5,
+    "heart_rate_avg": 105,
+    "workout_duration": 55
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-08-21",
+    "steps": 14161,
+    "calories_burned": 1904,
+    "active_minutes": 23,
+    "distance_km": 11.33,
+    "heart_rate_avg": 99,
+    "workout_duration": 48
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-08-20",
+    "steps": 7502,
+    "calories_burned": 1685,
+    "active_minutes": 35,
+    "distance_km": 6.0,
+    "heart_rate_avg": 136,
+    "workout_duration": 40
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-08-19",
+    "steps": 3738,
+    "calories_burned": 2691,
+    "active_minutes": 28,
+    "distance_km": 2.99,
+    "heart_rate_avg": 69,
+    "workout_duration": 27
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-08-18",
+    "steps": 11571,
+    "calories_burned": 2635,
+    "active_minutes": 65,
+    "distance_km": 9.26,
+    "heart_rate_avg": 122,
+    "workout_duration": 81
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-08-17",
+    "steps": 7420,
+    "calories_burned": 1605,
+    "active_minutes": 84,
+    "distance_km": 5.94,
+    "heart_rate_avg": 92,
+    "workout_duration": 38
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-08-16",
+    "steps": 4160,
+    "calories_burned": 2314,
+    "active_minutes": 23,
+    "distance_km": 3.33,
+    "heart_rate_avg": 94,
+    "workout_duration": 77
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-08-15",
+    "steps": 8955,
+    "calories_burned": 2142,
+    "active_minutes": 111,
+    "distance_km": 7.16,
+    "heart_rate_avg": 165,
+    "workout_duration": 56
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-08-14",
+    "steps": 11717,
+    "calories_burned": 1884,
+    "active_minutes": 77,
+    "distance_km": 9.37,
+    "heart_rate_avg": 114,
+    "workout_duration": 88
+  },
+  {
+    "user_id": "user_00001",
+    "date": "2025-08-13",
+    "steps": 5723,
+    "calories_burned": 2636,
+    "active_minutes": 35,
+    "distance_km": 4.58,
+    "heart_rate_avg": 170,
+    "workout_duration": 19
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-09-11",
+    "steps": 5166,
+    "calories_burned": 2588,
+    "active_minutes": 88,
+    "distance_km": 4.13,
+    "heart_rate_avg": 164,
+    "workout_duration": 46
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-09-10",
+    "steps": 11442,
+    "calories_burned": 1542,
+    "active_minutes": 67,
+    "distance_km": 9.15,
+    "heart_rate_avg": 166,
+    "workout_duration": 32
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-09-09",
+    "steps": 8701,
+    "calories_burned": 2946,
+    "active_minutes": 119,
+    "distance_km": 6.96,
+    "heart_rate_avg": 139,
+    "workout_duration": 17
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-09-08",
+    "steps": 12154,
+    "calories_burned": 2877,
+    "active_minutes": 103,
+    "distance_km": 9.72,
+    "heart_rate_avg": 116,
+    "workout_duration": 36
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-09-07",
+    "steps": 3995,
+    "calories_burned": 1607,
+    "active_minutes": 76,
+    "distance_km": 3.2,
+    "heart_rate_avg": 151,
+    "workout_duration": 15
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-09-06",
+    "steps": 8258,
+    "calories_burned": 2195,
+    "active_minutes": 63,
+    "distance_km": 6.61,
+    "heart_rate_avg": 111,
+    "workout_duration": 55
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-09-05",
+    "steps": 13527,
+    "calories_burned": 2365,
+    "active_minutes": 51,
+    "distance_km": 10.82,
+    "heart_rate_avg": 102,
+    "workout_duration": 41
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-09-04",
+    "steps": 11143,
+    "calories_burned": 2757,
+    "active_minutes": 109,
+    "distance_km": 8.91,
+    "heart_rate_avg": 150,
+    "workout_duration": 68
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-09-03",
+    "steps": 10519,
+    "calories_burned": 2341,
+    "active_minutes": 91,
+    "distance_km": 8.42,
+    "heart_rate_avg": 81,
+    "workout_duration": 9
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-09-02",
+    "steps": 4341,
+    "calories_burned": 2793,
+    "active_minutes": 41,
+    "distance_km": 3.47,
+    "heart_rate_avg": 149,
+    "workout_duration": 18
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-09-01",
+    "steps": 8774,
+    "calories_burned": 2748,
+    "active_minutes": 21,
+    "distance_km": 7.02,
+    "heart_rate_avg": 146,
+    "workout_duration": 33
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-08-31",
+    "steps": 4037,
+    "calories_burned": 1912,
+    "active_minutes": 49,
+    "distance_km": 3.23,
+    "heart_rate_avg": 131,
+    "workout_duration": 35
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-08-30",
+    "steps": 4052,
+    "calories_burned": 1848,
+    "active_minutes": 75,
+    "distance_km": 3.24,
+    "heart_rate_avg": 133,
+    "workout_duration": 35
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-08-29",
+    "steps": 11275,
+    "calories_burned": 2880,
+    "active_minutes": 81,
+    "distance_km": 9.02,
+    "heart_rate_avg": 141,
+    "workout_duration": 61
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-08-28",
+    "steps": 3745,
+    "calories_burned": 2581,
+    "active_minutes": 30,
+    "distance_km": 3.0,
+    "heart_rate_avg": 141,
+    "workout_duration": 28
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-08-27",
+    "steps": 14886,
+    "calories_burned": 2473,
+    "active_minutes": 39,
+    "distance_km": 11.91,
+    "heart_rate_avg": 69,
+    "workout_duration": 71
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-08-26",
+    "steps": 3306,
+    "calories_burned": 1588,
+    "active_minutes": 85,
+    "distance_km": 2.64,
+    "heart_rate_avg": 169,
+    "workout_duration": 20
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-08-25",
+    "steps": 7966,
+    "calories_burned": 2226,
+    "active_minutes": 116,
+    "distance_km": 6.37,
+    "heart_rate_avg": 94,
+    "workout_duration": 50
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-08-24",
+    "steps": 5419,
+    "calories_burned": 1862,
+    "active_minutes": 41,
+    "distance_km": 4.34,
+    "heart_rate_avg": 116,
+    "workout_duration": 63
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-08-23",
+    "steps": 11902,
+    "calories_burned": 1600,
+    "active_minutes": 103,
+    "distance_km": 9.52,
+    "heart_rate_avg": 72,
+    "workout_duration": 12
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-08-22",
+    "steps": 8761,
+    "calories_burned": 2630,
+    "active_minutes": 75,
+    "distance_km": 7.01,
+    "heart_rate_avg": 101,
+    "workout_duration": 31
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-08-21",
+    "steps": 11434,
+    "calories_burned": 2655,
+    "active_minutes": 65,
+    "distance_km": 9.15,
+    "heart_rate_avg": 162,
+    "workout_duration": 9
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-08-20",
+    "steps": 4861,
+    "calories_burned": 2586,
+    "active_minutes": 75,
+    "distance_km": 3.89,
+    "heart_rate_avg": 156,
+    "workout_duration": 49
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-08-19",
+    "steps": 8661,
+    "calories_burned": 2521,
+    "active_minutes": 80,
+    "distance_km": 6.93,
+    "heart_rate_avg": 155,
+    "workout_duration": 90
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-08-18",
+    "steps": 9937,
+    "calories_burned": 2233,
+    "active_minutes": 81,
+    "distance_km": 7.95,
+    "heart_rate_avg": 136,
+    "workout_duration": 17
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-08-17",
+    "steps": 14521,
+    "calories_burned": 2115,
+    "active_minutes": 37,
+    "distance_km": 11.62,
+    "heart_rate_avg": 174,
+    "workout_duration": 3
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-08-16",
+    "steps": 6056,
+    "calories_burned": 2342,
+    "active_minutes": 26,
+    "distance_km": 4.84,
+    "heart_rate_avg": 88,
+    "workout_duration": 67
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-08-15",
+    "steps": 12691,
+    "calories_burned": 2650,
+    "active_minutes": 37,
+    "distance_km": 10.15,
+    "heart_rate_avg": 116,
+    "workout_duration": 38
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-08-14",
+    "steps": 6750,
+    "calories_burned": 2886,
+    "active_minutes": 97,
+    "distance_km": 5.4,
+    "heart_rate_avg": 118,
+    "workout_duration": 11
+  },
+  {
+    "user_id": "user_00002",
+    "date": "2025-08-13",
+    "steps": 4290,
+    "calories_burned": 2609,
+    "active_minutes": 64,
+    "distance_km": 3.43,
+    "heart_rate_avg": 157,
+    "workout_duration": 62
+  }
+]
