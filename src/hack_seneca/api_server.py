@@ -24,9 +24,17 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
 # Global variables to store current user session
 current_user_data = None
 current_user_id = None
+
+# Fatigue Prediction Response Model
+class FatiguePredictionResponse(BaseModel):
+    success: bool
+    tired: Optional[bool] = None
+    probability: Optional[float] = None
+    error: Optional[str] = None
 
 # Pydantic models for request/response
 class LoginRequest(BaseModel):
@@ -55,6 +63,93 @@ class FoodAnalysisResponse(BaseModel):
     nutrition_data: Optional[Dict[str, Any]] = None
     summary: Optional[str] = None
     error: Optional[str] = None
+
+# Fatigue prediction endpoint (after app is defined)
+VOICE_FATIGUE_DIR = os.path.join(os.path.dirname(__file__), 'tools', 'voice_fatigue')
+from subprocess import run, PIPE
+@app.post("/api/predict-fatigue", response_model=FatiguePredictionResponse)
+async def predict_fatigue(audio: UploadFile = File(...)):
+    """Accepts an audio file and returns fatigue prediction."""
+    try:
+        print(f"[FATIGUE] Received audio file: {audio.filename}, size: {audio.size}")
+        
+        # Save uploaded file to temp location
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.webm') as tmp:
+            audio_data = await audio.read()
+            tmp.write(audio_data)
+            tmp_path = tmp.name
+            print(f"[FATIGUE] Saved audio to: {tmp_path}, size: {len(audio_data)} bytes")
+
+        # Convert to proper WAV format using ffmpeg
+        wav_path = tmp_path.replace('.webm', '.wav')
+        try:
+            # Try to convert using ffmpeg
+            import subprocess
+            convert_cmd = ['ffmpeg', '-i', tmp_path, '-ar', '8000', '-ac', '1', '-y', wav_path]
+            print(f"[FATIGUE] Converting audio: {' '.join(convert_cmd)}")
+            result = subprocess.run(convert_cmd, capture_output=True, text=True)
+            print(f"[FATIGUE] FFmpeg result: {result.returncode}")
+            if result.returncode != 0:
+                print(f"[FATIGUE] FFmpeg stderr: {result.stderr}")
+                # Fallback: try to use the original file as WAV
+                wav_path = tmp_path
+        except Exception as e:
+            print(f"[FATIGUE] FFmpeg conversion failed: {e}")
+            # Fallback: try to use the original file as WAV
+            wav_path = tmp_path
+
+        # Build command to run predict_from_audio.py
+        script_path = os.path.join(VOICE_FATIGUE_DIR, 'predict_from_audio.py')
+        pca_path = os.path.join(VOICE_FATIGUE_DIR, 'pca_women.pkl')
+        model_path = os.path.join(VOICE_FATIGUE_DIR, 'ensemble_women.pkl')
+        
+        print(f"[FATIGUE] Script path: {script_path}")
+        print(f"[FATIGUE] PCA path: {pca_path}")
+        print(f"[FATIGUE] Model path: {model_path}")
+        print(f"[FATIGUE] Files exist: script={os.path.exists(script_path)}, pca={os.path.exists(pca_path)}, model={os.path.exists(model_path)}")
+        
+        cmd = [
+            'python', script_path,
+            wav_path,
+            '--pca', pca_path,
+            '--model', model_path
+        ]
+        print(f"[FATIGUE] Running command: {' '.join(cmd)}")
+        
+        result = run(cmd, stdout=PIPE, stderr=PIPE, text=True)
+        print(f"[FATIGUE] Return code: {result.returncode}")
+        print(f"[FATIGUE] STDOUT: {result.stdout}")
+        print(f"[FATIGUE] STDERR: {result.stderr}")
+        
+        # Cleanup
+        try:
+            os.unlink(tmp_path)
+            if wav_path != tmp_path:
+                os.unlink(wav_path)
+        except:
+            pass
+
+        # Parse output for label and probability
+        output = result.stdout + result.stderr
+        print(f"[FATIGUE] Combined output: {output}")
+        
+        import re
+        label_match = re.search(r'Predicted label: (\d+)', output)
+        prob_match = re.search(r'Predicted probability.*: ([0-9.]+)', output)
+        tired = label_match and label_match.group(1) == '1'
+        probability = float(prob_match.group(1)) if prob_match else None
+
+        print(f"[FATIGUE] Label match: {label_match}")
+        print(f"[FATIGUE] Prob match: {prob_match}")
+        print(f"[FATIGUE] Tired: {tired}, Probability: {probability}")
+
+        if label_match:
+            return FatiguePredictionResponse(success=True, tired=tired, probability=probability)
+        else:
+            return FatiguePredictionResponse(success=False, error=f'Prediction failed. Output: {output[:200]}...', probability=probability)
+    except Exception as e:
+        print(f"[FATIGUE] Exception: {str(e)}")
+        return FatiguePredictionResponse(success=False, error=str(e))
 
 @app.get("/")
 async def root():

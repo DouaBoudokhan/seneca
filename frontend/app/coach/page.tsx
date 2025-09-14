@@ -39,6 +39,8 @@ export default function CoachPage() {
   const [loginUserId, setLoginUserId] = useState("")
   const [isLoggingIn, setIsLoggingIn] = useState(false)
   const [userData, setUserData] = useState<any>(null)
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null)
+  const [fatigueStatus, setFatigueStatus] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -49,6 +51,14 @@ export default function CoachPage() {
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  // Auto-send message when both transcript and audio are ready
+  useEffect(() => {
+    if (inputMessage && audioBlob && !isTyping) {
+      console.log("Sending message with audio:", { transcript: inputMessage, audioSize: audioBlob.size })
+      sendMessage(inputMessage, audioBlob)
+    }
+  }, [inputMessage, audioBlob, isTyping])
 
   const handleLogin = async () => {
     if (!loginUserId.trim()) return
@@ -87,7 +97,7 @@ export default function CoachPage() {
     }
   }
 
-  const sendMessage = async (content: string) => {
+  const sendMessage = async (content: string, audio?: Blob | null) => {
     if (!content.trim() || isTyping || !isLoggedIn) return
 
     const userMessage: Message = {
@@ -100,6 +110,33 @@ export default function CoachPage() {
     setMessages(prev => [...prev, userMessage])
     setInputMessage("")
     setIsTyping(true)
+    setFatigueStatus(null)
+
+    // If audio is present, send only audio to fatigue API
+    let fatigueResult: string | null = null
+    if (audio) {
+      console.log("Sending audio to fatigue API:", audio.size, "bytes")
+      try {
+        const formData = new FormData()
+        formData.append("audio", audio, "voice.wav")
+        const resp = await fetch(`${API_BASE_URL}/api/predict-fatigue`, {
+          method: "POST",
+          body: formData,
+        })
+        console.log("Fatigue API response status:", resp.status)
+        const fatigueData = await resp.json()
+        console.log("Fatigue API response data:", fatigueData)
+        if (fatigueData.success) {
+          fatigueResult = fatigueData.tired ? "You sound tired!" : "You sound energetic!"
+          setFatigueStatus(fatigueResult)
+        } else {
+          setFatigueStatus("Fatigue prediction failed.")
+        }
+      } catch (err) {
+        console.error("Fatigue prediction error:", err)
+        setFatigueStatus("Fatigue prediction error.")
+      }
+    }
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/chat`, {
@@ -108,7 +145,7 @@ export default function CoachPage() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({ 
-          message: content.trim(),
+          message: content.trim() + (fatigueResult ? `\nFatigue status: ${fatigueResult}` : ""),
           user_id: loginUserId 
         }),
       })
@@ -138,6 +175,7 @@ export default function CoachPage() {
       setMessages(prev => [...prev, errorMessage])
     } finally {
       setIsTyping(false)
+      setAudioBlob(null)
     }
   }
 
@@ -430,13 +468,19 @@ export default function CoachPage() {
                 />
                 {/* Voice Recorder Button */}
                 <VoiceRecorder
-                  onTranscript={(transcript) => setInputMessage(transcript)}
+                  onTranscript={(transcript) => {
+                    setInputMessage(transcript)
+                  }}
+                  onAudio={(blob) => {
+                    setAudioBlob(blob)
+                    console.log("Audio blob received:", blob)
+                  }}
                   isListening={isListening}
                   setIsListening={setIsListening}
                   className="ml-1"
                 />
                 <Button
-                  onClick={() => sendMessage(inputMessage)}
+                  onClick={() => sendMessage(inputMessage, audioBlob)}
                   disabled={!inputMessage.trim() || isTyping}
                   className="bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white px-6"
                 >
@@ -447,6 +491,10 @@ export default function CoachPage() {
                   )}
                 </Button>
               </div>
+              {/* Fatigue status display */}
+              {fatigueStatus && (
+                <div className="text-xs text-yellow-400 mt-2">{fatigueStatus}</div>
+              )}
             </div>
           </div>
         </main>

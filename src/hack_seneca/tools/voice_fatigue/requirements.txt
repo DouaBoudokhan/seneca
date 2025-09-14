@@ -1,0 +1,7 @@
+librosa
+scikit-learn==1.6.1
+numpy
+soundfile
+tensorflow
+joblib
+python-multipart

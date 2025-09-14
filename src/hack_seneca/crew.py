@@ -30,13 +30,18 @@ class FitnessCrew:
         else:
             # Set a dummy OpenAI key to satisfy CrewAI validation even when using Azure
             os.environ["OPENAI_API_KEY"] = "dummy-key-for-azure"
-            self.llm = LLM(
-                model=model,
-                api_key=api_key,
-                base_url=base_url,
-                api_version=api_version,
-                temperature=1.0
-            )
+            try:
+                self.llm = LLM(
+                    model=model or "azure/gpt-4",
+                    api_key=api_key,
+                    base_url=base_url,
+                    api_version=api_version or "2024-12-01-preview",
+                    temperature=1.0
+                )
+            except Exception as e:
+                print(f"Warning: Failed to configure Azure LLM: {e}")
+                # Fallback to OpenAI format
+                self.llm = LLM(model="gpt-3.5-turbo")
         
         # Tools
         self.flux_tool = FluxImageGenerator()
@@ -75,7 +80,7 @@ class FitnessCrew:
             ),
             llm=self.llm,
             verbose=True,
-            memory=True,  # Disable memory to prevent wrong delegation patterns
+            memory=True,  # Re-enable memory for conversation context
             allow_delegation=True,
             reasoning=True
         )
@@ -272,5 +277,5 @@ class FitnessCrew:
             process=Process.hierarchical,
             manager_llm=self.llm,
             verbose=True,
-            memory=True,  # Disable Crew memory to avoid LiteLLM/Azure memory errors
+            memory=False,  # Disable Crew memory to avoid LiteLLM/Azure memory errors
         )
