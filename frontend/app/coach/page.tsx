@@ -112,8 +112,9 @@ export default function CoachPage() {
     setIsTyping(true)
     setFatigueStatus(null)
 
-    // If audio is present, send only audio to fatigue API
+    // If audio is present, get fatigue prediction FIRST and wait for it
     let fatigueResult: string | null = null
+    let fatigueProb: number | null = null
     if (audio) {
       console.log("Sending audio to fatigue API:", audio.size, "bytes")
       try {
@@ -128,7 +129,9 @@ export default function CoachPage() {
         console.log("Fatigue API response data:", fatigueData)
         if (fatigueData.success) {
           fatigueResult = fatigueData.tired ? "You sound tired!" : "You sound energetic!"
+          fatigueProb = fatigueData.probability
           setFatigueStatus(fatigueResult)
+          console.log("Fatigue analysis complete:", fatigueResult, "Probability:", fatigueProb)
         } else {
           setFatigueStatus("Fatigue prediction failed.")
         }
@@ -138,16 +141,26 @@ export default function CoachPage() {
       }
     }
 
+    // Now send the chat message with fatigue information
     try {
+      const chatData: any = { 
+        message: content.trim(),
+        user_id: loginUserId 
+      }
+      
+      // Include fatigue data if available
+      if (fatigueResult) {
+        chatData.fatigue_status = fatigueResult
+        chatData.fatigue_probability = fatigueProb
+        console.log("Including fatigue data in chat request:", chatData)
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ 
-          message: content.trim() + (fatigueResult ? `\nFatigue status: ${fatigueResult}` : ""),
-          user_id: loginUserId 
-        }),
+        body: JSON.stringify(chatData),
       })
 
       if (!response.ok) {

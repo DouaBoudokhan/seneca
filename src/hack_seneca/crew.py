@@ -175,6 +175,9 @@ class FitnessCrew:
                 "Nutrition Intake: {user_nutrition}\n"
                 "Context: {context}\n\n"
                 
+                "🔊 FATIGUE AWARENESS: If the message contains 'IMPORTANT: Voice analysis detected' or mentions tiredness, "
+                "acknowledge the user's fatigue and provide simpler, easier-to-prepare meal suggestions with less complexity.\n\n"
+                
                 "Instructions:\n"
                 "1. Provide CONCISE, straight-to-the-point nutrition advice\n"
                 "2. For meal suggestions, give 1-3 specific recipes with ingredients and macros\n"
@@ -204,6 +207,10 @@ class FitnessCrew:
                 "Recent Activities: {user_activities}\n"
                 "Body Measurements: {user_measurements}\n"
                 "Context: {context}\n\n"
+                
+                "🔊 FATIGUE AWARENESS: If the message contains 'IMPORTANT: Voice analysis detected' or mentions tiredness, "
+                "acknowledge the user's fatigue and provide gentler, shorter workouts with lower intensity and more rest.\n\n"
+                
                 "Instructions:\n"
                 "1. If the request is about workouts, provide a structured plan with exercises, sets, reps, and rest.\n"
                 "2. Include 1-2 progression guidelines and safety/form notes.\n"
@@ -225,6 +232,9 @@ class FitnessCrew:
                 "Body Measurements: {user_measurements}\n"
                 "Nutrition Intake: {user_nutrition}\n"
                 "Conversation History: {context}\n\n"
+                
+                "🔊 FATIGUE DETECTION: If the user message contains 'IMPORTANT: Voice analysis detected' or mentions being tired, "
+                "ensure the specialist acknowledges this and provides gentler, simpler, more fatigue-appropriate recommendations.\n\n"
                 
                 "DELEGATION INSTRUCTIONS:\n"
                 "As the manager, analyze this request and delegate to the appropriate specialist:\n\n"

@@ -48,6 +48,8 @@ class LoginResponse(BaseModel):
 class ChatRequest(BaseModel):
     message: str
     user_id: str
+    fatigue_status: Optional[str] = None  # "You sound tired!" or None
+    fatigue_probability: Optional[float] = None
 
 class ChatResponse(BaseModel):
     response: str
@@ -444,6 +446,8 @@ async def api_chat(request: ChatRequest):
         
         print(f"Starting CrewAI chat for user: {request.user_id}")
         print(f"User message: {request.message}")
+        if request.fatigue_status:
+            print(f"Fatigue status: {request.fatigue_status}")
 
         # Lightweight intent guard: if it's just a greeting, respond directly without invoking CrewAI
         text = (request.message or "").strip().lower()
@@ -458,18 +462,32 @@ async def api_chat(request: ChatRequest):
             any(g in w for g in greetings) for w in text_clean.split()
         ):
             user_name = current_user_data.get("profile", {}).get("name", "there")
-            reply = (
-                f"Hi {user_name}! What would you like help with today — a workout plan, nutrition guidance (like meal ideas), or something else?"
-            )
+            if request.fatigue_status:
+                reply = (
+                    f"Hi {user_name}! I notice you sound tired right now. "
+                    f"What would you like help with today — perhaps a gentle workout plan, nutrition guidance, or something else to help you feel better?"
+                )
+            else:
+                reply = (
+                    f"Hi {user_name}! What would you like help with today — a workout plan, nutrition guidance (like meal ideas), or something else?"
+                )
             return ChatResponse(response=reply, timestamp=datetime.now())
         
         # Initialize the CrewAI fitness coach
         fitness_crew = FitnessCrew()
         crew_instance = fitness_crew.chat_crew()
         
+        # Build fatigue context if available
+        fatigue_context = ""
+        if request.fatigue_status:
+            fatigue_context = f"\n\nIMPORTANT: Voice analysis detected - {request.fatigue_status}"
+            if request.fatigue_probability:
+                fatigue_context += f" (Confidence: {request.fatigue_probability:.1%})"
+            fatigue_context += "\nThe user sounds tired, so please acknowledge this and adjust your recommendations to be gentler, shorter, and more fatigue-appropriate."
+        
         # Prepare inputs in the format expected by the crew
         inputs = {
-            "user_message": request.message,
+            "user_message": request.message + fatigue_context,
             "user_id": request.user_id,
             "user_profile": current_user_data.get('profile', {}),
             "user_activities": current_user_data.get('activities', []),
