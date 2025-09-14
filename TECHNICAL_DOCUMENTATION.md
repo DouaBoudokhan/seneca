@@ -22,7 +22,7 @@
 
 ## Project Overview
 
-**HackSeneca** is a sophisticated AI-powered fitness platform that combines multi-agent AI systems with modern web technologies to provide personalized fitness coaching, nutrition guidance, and real-time workout tracking.
+**FitAI** is a sophisticated AI-powered fitness platform that combines multi-agent AI systems with modern web technologies to provide personalized fitness coaching, nutrition guidance, and real-time workout tracking.
 
 ### Team Structure
 Our dedicated team of 4 developers brings diverse expertise to the project:

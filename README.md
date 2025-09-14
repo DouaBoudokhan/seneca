@@ -1,11 +1,11 @@
-# HackSeneca - AI-Powered Fitness Platform 🏋️‍♂️
+# FitAI - AI-Powered Fitness Platform 🏋️‍♂️
 
 [![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://python.org)
 [![Next.js](https://img.shields.io/badge/Next.js-14-black.svg)](https://nextjs.org)
 [![CrewAI](https://img.shields.io/badge/CrewAI-Multi--Agent-green.svg)](https://crewai.com)
 [![FastAPI](https://img.shields.io/badge/FastAPI-Modern-red.svg)](https://fastapi.tiangolo.com)
 
-**HackSeneca** is a sophisticated AI-powered fitness platform that combines multi-agent AI systems with modern web technologies to provide personalized fitness coaching, nutrition guidance, and real-time workout tracking.
+**FitAI** is a sophisticated AI-powered fitness platform that combines multi-agent AI systems with modern web technologies to provide personalized fitness coaching, nutrition guidance, and real-time workout tracking.
 
 ## 🌟 Key Features
 
