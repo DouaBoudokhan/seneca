@@ -317,6 +317,6 @@ For support, questions, or feedback:
 
 ---
 
-**Built with ❤️ by the HackSeneca Team**
+**Built with ❤️ by the Vortex Team**
 
 *Empowering fitness through AI innovation*
