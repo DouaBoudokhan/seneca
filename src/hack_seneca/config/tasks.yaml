@@ -1,17 +1,148 @@
-assistant_task:
-  description: >
-    You are a virtual fitness assistant. Respond to the user's message: {user_message}
+main_task:
+  description: |
+    Handle this user request with personalized guidance: {user_message}
     
-    Conversation History (for context):
-    {context}
+    USER PROFILE & DATA:
+    User ID: {user_id}
+    Profile: {user_profile}
+    Recent Activities: {user_activities}
+    Body Measurements: {user_measurements}
+    Nutrition Intake: {user_nutrition}
+    Conversation History: {context}
     
-    Use this history to maintain context and provide consistent responses.
-    If the user asks about workouts, provide structured plans with sets/reps guidance.
-    Ask clarifying questions when needed but keep them brief.
-    Always prioritize safety and suggest professional consultation for health concerns.
+    🔊 FATIGUE DETECTION: If the user message contains 'IMPORTANT: Voice analysis detected' or mentions being tired,
+    ensure the specialist acknowledges this and provides gentler, simpler, more fatigue-appropriate recommendations.
     
-  expected_output: >
-    A concise, friendly, and actionable response tailored to the user's fitness query.
-    If providing workout plans, use clear formatting with bullet points or numbers.
-    Keep responses under 3-4 sentences when possible.
-  agent: assistant
+    CRITICAL DELEGATION INSTRUCTIONS:
+    You are the manager. You MUST analyze the user request and:
+    
+    1. If the request is about FITNESS/WORKOUTS (like workout plans, exercise routines, training programs, 
+       push/pull/legs, splits, strength training, cardio, muscle building, form guidance):
+       → DELEGATE to "Expert Fitness Coach" agent immediately
+    
+    2. If the request is about NUTRITION/FOOD (like meal plans, recipes, diet advice, nutrition guidance, 
+       macro counting, supplements, healthy eating, meal prep):
+       → DELEGATE to "Certified Nutritionist & Meal Planner" agent immediately
+    
+    3. If unclear, ask ONE clarifying question first, then delegate.
+    
+    DO NOT answer fitness or nutrition questions yourself - ALWAYS delegate to the appropriate specialist.
+  expected_output: |
+    The output should be whatever the specialist provides after delegation.
+    Do not use the template format below - just pass through the specialist's response directly.
+  agent: manager_agent
+
+fitness_task:
+  description: |
+    Provide a complete workout plan for: {user_message}
+    
+    USER PROFILE & DATA:
+    User ID: {user_id}
+    Profile: {user_profile}
+    Recent Activities: {user_activities}
+    Body Measurements: {user_measurements}
+    Context: {context}
+    
+    🔊 FATIGUE AWARENESS: If the message contains 'IMPORTANT: Voice analysis detected' or mentions tiredness,
+    acknowledge the user's fatigue and provide gentler, shorter workouts with lower intensity and more rest.
+  expected_output: |
+    # 💪 Workout Plan
+    
+    ## 🎯 Workout Overview
+    - **Goal**: [Primary objective]
+    - **Duration**: [Time commitment]
+    - **Intensity**: [Beginner/Intermediate/Advanced]
+    - **Equipment**: [Required equipment]
+    
+    ## 🏃‍♂️ Exercise Routine
+    ### Warm-up (5-10 minutes)
+    - [Warm-up exercises with durations]
+    
+    ### Main Workout
+    #### Exercise 1: [Exercise Name]
+    - **Sets**: X
+    - **Reps**: X
+    - **Rest**: X seconds
+    - **Notes**: [Form tips/modifications]
+    
+    #### Exercise 2: [Exercise Name]
+    - **Sets**: X
+    - **Reps**: X
+    - **Rest**: X seconds
+    - **Notes**: [Form tips/modifications]
+    
+    ### Cool-down (5-10 minutes)
+    - [Cool-down stretches and recovery]
+    
+    ## 📈 Progression Plan
+    - Week 1-2: [Initial phase]
+    - Week 3-4: [Progression]
+    - Beyond: [Advanced modifications]
+    
+    ## ⚠️ Safety Notes
+    - [Important safety considerations]
+    - [When to rest or modify]
+    
+    Return 'Not applicable' if the request is not fitness-related.
+  agent: fitness_agent
+
+nutritionist_task:
+  description: |
+    Provide comprehensive nutrition guidance for: {user_message}
+    
+    USER PROFILE & DATA:
+    User ID: {user_id}
+    Profile: {user_profile}
+    Recent Activities: {user_activities}
+    Body Measurements: {user_measurements}
+    Nutrition Intake: {user_nutrition}
+    Context: {context}
+    
+    🔊 FATIGUE AWARENESS: If the message contains 'IMPORTANT: Voice analysis detected' or mentions tiredness,
+    acknowledge the user's fatigue and provide simpler, easier-to-prepare meal suggestions with less complexity.
+  expected_output: |
+    # 🍎 Nutrition Guidance
+    
+    ## 🎯 Nutrition Overview
+    - **Goal**: [Primary nutrition objective]
+    - **Calorie Target**: [Daily calorie recommendation]
+    - **Macronutrient Split**: [Protein/Carbs/Fats percentages]
+    - **Dietary Considerations**: [Allergies/preferences/restrictions]
+    
+    ## 🍽️ Meal Plan
+    ### Breakfast
+    - **Meal**: [Specific meal suggestion]
+    - **Calories**: ~X kcal
+    - **Prep Time**: X minutes
+    - **Key Nutrients**: [Main nutritional benefits]
+    
+    ### Lunch
+    - **Meal**: [Specific meal suggestion]
+    - **Calories**: ~X kcal
+    - **Prep Time**: X minutes
+    - **Key Nutrients**: [Main nutritional benefits]
+    
+    ### Dinner
+    - **Meal**: [Specific meal suggestion]
+    - **Calories**: ~X kcal
+    - **Prep Time**: X minutes
+    - **Key Nutrients**: [Main nutritional benefits]
+    
+    ### Snacks (Optional)
+    - **Option 1**: [Healthy snack suggestion]
+    - **Option 2**: [Alternative snack]
+    
+    ## 💡 Nutrition Tips
+    - [Practical advice for meal prep]
+    - [Hydration recommendations]
+    - [Timing considerations]
+    
+    ## 📊 Progress Tracking
+    - [How to monitor nutrition goals]
+    - [Key metrics to watch]
+    
+    ## 🖼️ Meal Visualization
+    [Generated meal images when applicable]
+    
+    Return 'Not applicable' if the request is not nutrition-related.
+  agent: nutritionist_agent
